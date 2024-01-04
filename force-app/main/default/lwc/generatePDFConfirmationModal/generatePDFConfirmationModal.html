@@ -1,0 +1,9 @@
+<template>
+    <lightning-quick-action-panel title="Quick Action Title" header={label.warningLabel}>
+        {label.generatePdfWarningNote}
+        <div slot="footer">
+          <lightning-button variant="neutral" label={label.cancelButtonLabel} onclick={closeAction} class="slds-p-horizontal_small"></lightning-button>
+          <lightning-button variant="brand" label={label.generatePDFButtonLabel} onclick={handleSuccess}></lightning-button>
+        </div>
+      </lightning-quick-action-panel>
+</template>

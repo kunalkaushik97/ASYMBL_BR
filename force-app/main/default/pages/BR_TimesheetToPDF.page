@@ -1,0 +1,204 @@
+<apex:page id="BR_TimesheetToPDF" standardController="ASYMBL_Time__Timesheet__c" renderAs="pdf" extensions="BR_TimesheetToPDFController">
+    <body>
+         <div class="" style="min-height: 1.5in;">
+            <!-- SECTION: header with basic user info and logo -->
+            <table> 
+                <tr>
+                    <td>
+                        <table style="border-spacing: 0; width: 100%">
+                            <tr>
+                                <td style="text-align:right;">User:</td>
+                                <td style="text-align:left;border: 1px solid">
+                                    <apex:outputText style="margin-left:5px" value="{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Candidate__r.Name}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right;">Company:</td>
+                                <td style="text-align:left;border: 1px solid;">
+                                    <apex:outputText style="margin-left:5px" value="{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Candidate__r.Account.Name}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right;">Period:</td>
+                                <td style="text-align:left;border: 1px solid">
+                                    <apex:outputText style="margin-left:5px" value="{0, date, MM/dd/yyyy }">
+                                        <apex:param value="{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Pay_Period_Start_Date__c}"/>
+                                    </apex:outputText>
+                                    -
+                                    <apex:outputText value="{0, date, MM/dd/yyyy}">
+                                        <apex:param value="{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Pay_Period_End_Date__c}"/>
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    
+                    <td style="width: 10%;padding-left: 50px">
+                        <apex:image style="float: right" width="2.5in" url="{!$Resource.BR_CompanyLogo}"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        
+        <!-- SECTION: Table with timesheet entries for the complete week -->
+        
+        <div style="min-height: 2in;">
+            <table border="1px solid;" style="width: 100%; border-spacing: 0">
+                <tr style="background: lightgray;">
+                <th></th>
+                <apex:repeat value="{!daysWithDateOfWeek}" var="dayOfWeek" >
+                	<th>{!dayOfWeek}</th>
+                </apex:repeat>
+            </tr>                 
+				<tr>
+					<th>IN</th>
+                    <apex:repeat value="{!inTimeEntries}" var="inTime" >
+                    	<td>{!inTime}</td>
+                    </apex:repeat>
+                </tr>
+            	<tr>
+					<th>OUT</th>
+                    <apex:repeat value="{!outTimeEntries}" var="outTime" >
+                    	<td>{!outTime}</td>
+                    </apex:repeat>
+                </tr>
+            	<tr>
+					<th>LUNCH</th>
+                    <apex:repeat value="{!breakEntries}" var="breakTime" >
+                    	<td>{!breakTime}</td>
+                    </apex:repeat>
+                </tr>
+                <!--<tr>
+					<th>OUT</th>
+                    <apex:repeat value="{!secondaryOutTimeEntries}" var="secOutTime" >
+                    	<td>{!secOutTime}</td>
+                    </apex:repeat>
+                </tr>-->
+            	<tr>
+					<th>TOTAL</th>
+                    <apex:repeat value="{!totalHourEntries}" var="totalTime" >
+                    	<td>{!totalTime}</td>
+                    </apex:repeat>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- SECTION: Hour Summry, PTO Summary & Expense Summary -->
+        
+        <div style="min-height: 1.5in;">
+        	<table style="width:100%">
+                <tr>
+                    <th>Hours Summary</th>
+                    <th>Time Off Summary</th>
+                    <!--<th>Expense Summary</th>-->
+                </tr>
+                <tr>
+                    <td style="padding-right: 25px">
+                    	<table border="1" style="width:100%; border-spacing: 0">
+                            <tr>
+                                <th style="background: lightgray;">Regular</th>
+                                <td style="text-align: right">{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Regular_Hours__c}</td>
+                            </tr>
+                            <tr>
+                                <th style="background: lightgray;">Overtime</th>
+                                <td style="text-align: right">{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Overtime_Hours__c}</td>
+                            </tr>
+                            <tr>
+                                <th style="background: lightgray;">Doubletime</th>
+                                <td style="text-align: right">{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Double_Time_Hours__c}</td>
+                            </tr>
+                    	</table>
+                    </td>
+                    <td style="padding-right: 25px">
+                    	<table border="1" style="width:100%; border-spacing: 0">
+                            <tr>
+                                <th style="background: lightgray;">Sick Hours</th>
+                                <td style="text-align: right">
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Total_Additional_Hours__c != NULL, true ,false)}">
+                                        {!ASYMBL_Time__Timesheet__c.Total_Additional_Hours__c}
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Total_Additional_Hours__c == NULL, true ,false)}">
+                                    	0.0
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="background: lightgray;">Holiday Hours</th>
+                                <td style="text-align: right">
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Holiday_Hours__c != NULL, true ,false)}">
+                                    	{!ASYMBL_Time__Timesheet__c.Holiday_Hours__c}
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Holiday_Hours__c == NULL, true ,false)}">
+                                    	0.0
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="background: lightgray;">PTO Hours</th>
+                                <td style="text-align: right">
+                                     <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.PTO_Hours__c != NULL, true, false)}">
+                                    	{!ASYMBL_Time__Timesheet__c.PTO_Hours__c}
+                                     </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.PTO_Hours__c == NULL, true ,false)}">
+                                    	0.0
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                    	</table>
+                    </td>
+                    <!--<td>
+                    	<table border="1" style="width:100%; border-spacing: 0">
+                            <tr>
+                                <th style="background: lightgray;">Amount</th>
+                                <td style="text-align: right">$ {!ASYMBL_Time__Timesheet__c.Total_Candidate_Pay_Additional__c}</td>
+                            </tr>
+                        </table>
+                    </td>-->
+                </tr>
+            </table>
+        </div>
+        
+        <!-- SECTION: Notes & Disclaimers -->
+        
+        <div style="padding: 2px; font-weight: bold; margin-top: 10px; margin-bottom: 10px">
+            <apex:outputText value="Notes"/>
+        </div>
+        
+        <div style="border: 1.5px solid; padding: 2px; font-weight: bold">
+            <apex:outputText value="You agree that you have entered the correct hours worked, and that all hours are accurate to the best of your knowledge."/>
+        </div>
+        
+        <div style="font-weight: bold; margin-top: 10px">
+            <table style="border-spacing: 0">
+                <tr>
+                	<th>User Signature:</th>
+                    <td style="border: 1px solid; padding: 2px; margin-left: 2p">Electronically Submitted by {!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Candidate__r.Name}, on 
+                        <apex:outputText value="{0, date, MM/dd/yyyy h:mm a}">
+                        	<apex:param value="{!ASYMBL_Time__Timesheet__c.Submitted_On_Date_Time__c + offset}"/>
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div style="border: 1.5px solid; padding: 2px; font-weight: bold; margin-top: 10px">
+            <apex:outputText value="By clicking OK, you agree that all hours reported are accurate with the timesheet."/>
+        </div>
+        
+        <div style="font-weight: bold; margin-top: 10px;">
+            <table style="border-spacing: 0">
+                <tr>
+                	<th>Approval Signature:</th>
+                    <td style="border: 1px solid; padding: 2px; margin-left: 2p">Electronically Approved by {!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Timesheet_Approver__r.Name} on 
+                        <apex:outputText value="{0, date, MM/dd/yyyy h:mm a}">
+                        	<apex:param value="{!ASYMBL_Time__Timesheet__c.Approved_On_Date_Time__c + offset}"/>
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+         
+    </body>
+</apex:page>
