@@ -10,10 +10,11 @@ public class BR_AsymblTimesheetTriggerHelper {
     
     private static Boolean isTimesheetEligibleToGeneratePDF(ASYMBL_Time__Timesheet__c oldTs, ASYMBL_Time__Timesheet__c newTs){
         Boolean result = false;
+        Boolean isStatusApproved = oldTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED_BY_BRANCH || oldTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED ? true : false;
         
-        if((oldTs.ASYMBL_Time__Status__c != STATUS_VALUE_APPROVED_BY_BRANCH && (newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED_BY_BRANCH || newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED)) 
+        if((isStatusApproved && (( oldTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED && newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED_BY_BRANCH ) || ( oldTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED_BY_BRANCH && newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED )))
            ||
-		   (oldTs.ASYMBL_Time__Status__c != STATUS_VALUE_APPROVED && (newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED_BY_BRANCH || newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED ))){
+           (!isStatusApproved && (newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED_BY_BRANCH || newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED ))){
             result = true;
         }  
         return result;
@@ -27,7 +28,7 @@ public class BR_AsymblTimesheetTriggerHelper {
     
     @Future(callout=true)
     public static void saveTimesheetAsPDF(String recordId){
-        System.debug('1 recordId = '+recordId);
+
         deleteExistingTimesheetPDFs(recordId);
         PageReference MyFirstPDF = new PageReference('/apex/BR_TimesheetToPDF');
         MyFirstPDF.getParameters().put('id', recordId);
@@ -55,8 +56,6 @@ public class BR_AsymblTimesheetTriggerHelper {
     }
     
     public static void deleteExistingTimesheetPDFs(String recordId){
-        System.debug('Att ::> '+[Select Id, LinkedEntityId from ContentDocumentLink WHERE LinkedEntityId = :recordId]);
-        //delete [Select Id, LinkedEntityId from ContentDocumentLink WHERE LinkedEntityId = :recordId];
         delete [Select Id, LinkedEntityId from ContentDocumentLink WHERE LinkedEntityId = :recordId AND ContentDocument.Title LIKE '%Timesheet%'];
     }
 }
