@@ -4,14 +4,11 @@ public class BR_TimesheetToPDFController {
     public List<ASYMBL_Time__Time_Entry__c> timeEntries;
     public List<String> inTimeEntries {get; set;}
     public List<String> outTimeEntries {get; set;}
-    //public List<String> secondaryInTimeEntries {get; set;}
-    //public List<String> secondaryOutTimeEntries {get; set;}
     public List<String> breakEntries {get; set;}
     public List<String> totalHourEntries {get; set;}
     public List<String> daysWithDateOfWeek {get; set;}
     public Double offset{get{
         TimeZone tz = UserInfo.getTimeZone();
-        //Milliseconds to Day
         return tz.getOffset(DateTime.now()) / (1000 * 3600 * 24.0);
     }}
     
@@ -20,8 +17,6 @@ public class BR_TimesheetToPDFController {
     public BR_TimesheetToPDFController(ApexPages.StandardController controller){
         inTimeEntries = new List<String>();
         outTimeEntries = new List<String>();
-        //secondaryInTimeEntries = new List<String>();
-        //secondaryOutTimeEntries = new List<String>();
         totalHourEntries = new List<String>();
         breakEntries = new List<String>();
         daysWithDateOfWeek = new List<String>();
@@ -31,8 +26,6 @@ public class BR_TimesheetToPDFController {
         for(Integer index = 0; index < 7; index++){
             inTimeEntries.add(BR_Constants.DASH_CHARACTER);
             outTimeEntries.add(BR_Constants.DASH_CHARACTER);
-            //secondaryInTimeEntries.add(BR_Constants.DASH_CHARACTER);
-            //secondaryOutTimeEntries.add(BR_Constants.DASH_CHARACTER);
             totalHourEntries.add(BR_Constants.DASH_CHARACTER);
             breakEntries.add(BR_Constants.DASH_CHARACTER);
         }
@@ -59,8 +52,6 @@ public class BR_TimesheetToPDFController {
             Integer index = DayToIndexDetails.get((timeEntry.ASYMBL_Time__Date__c).day());
             inTimeEntries[index] = timeEntry.ASYMBL_Time__Start_Time__c != null ? toString(Datetime.newInstance(Date.today(), (timeEntry.ASYMBL_Time__Start_Time__c)).format(BR_Constants.TIME_FORMAT)) : BR_Constants.DASH_CHARACTER;
             outTimeEntries[index] = timeEntry.ASYMBL_Time__End_Time__c != null ? toString(Datetime.newInstance(Date.today(), (timeEntry.ASYMBL_Time__End_Time__c)).format(BR_Constants.TIME_FORMAT)) : BR_Constants.DASH_CHARACTER;
-            //secondaryInTimeEntries[index] = timeEntry.ASYMBL_Time__Secondary_Start_Time__c != null ? toString(Datetime.newInstance(Date.today(), (timeEntry.ASYMBL_Time__Secondary_Start_Time__c)).format(BR_Constants.TIME_FORMAT)) : BR_Constants.DASH_CHARACTER;
-            //secondaryOutTimeEntries[index] = timeEntry.ASYMBL_Time__Secondary_End_Time__c != null ? toString(Datetime.newInstance(Date.today(), (timeEntry.ASYMBL_Time__Secondary_End_Time__c)).format(BR_Constants.TIME_FORMAT)): BR_Constants.DASH_CHARACTER;
             breakEntries[index] = timeEntry.ASYMBL_Time__Break__c != null ? timeEntry.ASYMBL_Time__Break__c : BR_Constants.DASH_CHARACTER;
             totalHourEntries[index] = toString((timeEntry.ASYMBL_Time__Regular_Hours__c + timeEntry.ASYMBL_Time__Overtime_Hours__c + timeEntry.ASYMBL_Time__Double_Time_Hours__c).setscale(2))+ 'h';
         }
