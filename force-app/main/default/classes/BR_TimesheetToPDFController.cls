@@ -7,6 +7,7 @@ public class BR_TimesheetToPDFController {
     public List<String> breakEntries {get; set;}
     public List<String> totalHourEntries {get; set;}
     public List<String> daysWithDateOfWeek {get; set;}
+    public String company {get; set;}
     public Double offset{get{
         TimeZone tz = UserInfo.getTimeZone();
         return tz.getOffset(DateTime.now()) / (1000 * 3600 * 24.0);
@@ -34,7 +35,8 @@ public class BR_TimesheetToPDFController {
         timeEntries = [SELECT Id, ASYMBL_Time__Date__c, ASYMBL_Time__Start_Time__c, ASYMBL_Time__End_Time__c, ASYMBL_Time__Break__c, ASYMBL_Time__Regular_Hours__c, ASYMBL_Time__Overtime_Hours__c, ASYMBL_Time__Double_Time_Hours__c, ASYMBL_Time__Secondary_Start_Time__c, ASYMBL_Time__Secondary_End_Time__c FROM ASYMBL_Time__Time_Entry__c WHERE ASYMBL_Time__Timesheet__c =: tsId];
         
         ASYMBL_Time__Timesheet__c timesheet = new ASYMBL_Time__Timesheet__c();
-        timesheet = [SELECT Id, ASYMBL_Time__Pay_Period_Start_Date__c FROM ASYMBL_Time__Timesheet__c WHERE Id =: tsId LIMIT 1];
+        timesheet = [SELECT Id, ASYMBL_Time__Pay_Period_Start_Date__c, Placement__r.bpats__Account__r.Name FROM ASYMBL_Time__Timesheet__c WHERE Id =: tsId LIMIT 1];
+        company = timesheet.Placement__r.bpats__Account__r.Name;
         
         DateTime nextDate = Datetime.valueOf(JSON.deserialize('"' + String.valueOf(timesheet.ASYMBL_Time__Pay_Period_Start_Date__c) + '"', Datetime.class));
         

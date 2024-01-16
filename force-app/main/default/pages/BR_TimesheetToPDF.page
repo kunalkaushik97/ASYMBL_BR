@@ -15,7 +15,7 @@
                             <tr>
                                 <td style="text-align:right;">Company:</td>
                                 <td style="text-align:left;border: 1px solid;">
-                                    <apex:outputText style="margin-left:5px" value="{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Candidate__r.Account.Name}"/>
+                                    <apex:outputText style="margin-left:5px" value="{!company}"/>
                                 </td>
                             </tr>
                             <tr>
