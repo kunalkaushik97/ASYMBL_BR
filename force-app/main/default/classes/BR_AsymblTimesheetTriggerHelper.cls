@@ -1,4 +1,4 @@
-public class BR_AsymblTimesheetTriggerHelper {
+public with sharing class BR_AsymblTimesheetTriggerHelper {
     private static String STATUS_VALUE_APPROVED_BY_BRANCH = 'Approved by Branch';
     private static String STATUS_VALUE_APPROVED = 'Approved';
 
@@ -16,7 +16,7 @@ public class BR_AsymblTimesheetTriggerHelper {
            ||
            (!isStatusApproved && (newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED_BY_BRANCH || newTs.ASYMBL_Time__Status__c == STATUS_VALUE_APPROVED ))){
             result = true;
-        }  
+        }
         return result;
     }
     
@@ -29,25 +29,49 @@ public class BR_AsymblTimesheetTriggerHelper {
     @Future(callout=true)
     public static void saveTimesheetAsPDF(String recordId){
 
-        deleteExistingTimesheetPDFs(recordId);
-        PageReference MyFirstPDF = new PageReference('/apex/BR_TimesheetToPDF');
-        MyFirstPDF.getParameters().put('id', recordId);
-
-        ContentVersion cont = new ContentVersion();
-        cont.Title = 'TimeSheet_' + DateTime.now();
-        cont.PathOnClient = 'TimeSheet_' + DateTime.now() + '.pdf';
-        cont.VersionData = !Test.isRunningTest() ? MyFirstPDF.getContentAsPDF() : Blob.valueOf('Fake PDF content');
-        cont.Origin = 'H';
-        insert cont;
+        try{
+            deleteExistingTimesheetPDFs(recordId);
+            PageReference MyFirstPDF = new PageReference('/apex/BR_TimesheetToPDF');
+            MyFirstPDF.getParameters().put('id', recordId);
+    
+            ContentVersion cont = new ContentVersion();
+            cont.Title = 'TimeSheet_' + DateTime.now();
+            cont.PathOnClient = 'TimeSheet_' + DateTime.now() + '.pdf';
+            cont.VersionData = !Test.isRunningTest() ? MyFirstPDF.getContentAsPDF() : Blob.valueOf('Fake PDF content');
+            cont.Origin = 'H';
+            if(hasReadAccess('Network')){
+                List<Network> communities = [SELECT Id,Name FROM Network WHERE Name = 'BTQ Connect' LIMIT 1];
+                if(! communities.isEmpty()){
+                        cont.NetworkId = communities[0].Id;
+                }
+            }
+            insert cont;
+            
+            cont = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cont.Id];
+            ContentDocumentLink cdl = new ContentDocumentLink(
+                ContentDocumentId = cont.ContentDocumentId,
+                LinkedEntityId = recordId,
+                ShareType = 'I',
+                Visibility = 'AllUsers'
+            );
+            insert cdl;
+        }
+        catch(Exception ex){
+            insert new ASYMBL_Time__AST_Log__c(ASYMBL_Time__Log_Message__c = ex.getMessage());
+        }
+    }
+    
+    public static Boolean hasReadAccess(String objectName) {
+        // Get the schema describe result for the object
+        Boolean result = false;
+        Id profileId = userinfo.getProfileId();
+		String profileName = [Select Id,Name from Profile where Id=:profileId].Name;
         
-        cont = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cont.Id];
-        ContentDocumentLink cdl = new ContentDocumentLink(
-        	ContentDocumentId = cont.ContentDocumentId,
-          	LinkedEntityId = recordId,
-            ShareType = 'I',
-            Visibility = 'AllUsers'
-        );
-        insert cdl;
+        if(profileName == 'Boutique Experience Cloud User'){
+            result = true;
+        }
+        
+        return result;
     }
     
     @AuraEnabled

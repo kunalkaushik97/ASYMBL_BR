@@ -69,12 +69,6 @@
                     	<td>{!breakTime}</td>
                     </apex:repeat>
                 </tr>
-                <!--<tr>
-					<th>OUT</th>
-                    <apex:repeat value="{!secondaryOutTimeEntries}" var="secOutTime" >
-                    	<td>{!secOutTime}</td>
-                    </apex:repeat>
-                </tr>-->
             	<tr>
 					<th>TOTAL</th>
                     <apex:repeat value="{!totalHourEntries}" var="totalTime" >
@@ -91,22 +85,21 @@
                 <tr>
                     <th>Hours Summary</th>
                     <th>Time Off Summary</th>
-                    <!--<th>Expense Summary</th>-->
                 </tr>
                 <tr>
                     <td style="padding-right: 25px">
                     	<table border="1" style="width:100%; border-spacing: 0">
                             <tr>
                                 <th style="background: lightgray;">Regular</th>
-                                <td style="text-align: right">{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Regular_Hours__c}</td>
+                                <td style="text-align: right">{!ASYMBL_Time__Timesheet__c.Regular_Hours_2DP__c}</td>
                             </tr>
                             <tr>
                                 <th style="background: lightgray;">Overtime</th>
-                                <td style="text-align: right">{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Overtime_Hours__c}</td>
+                                <td style="text-align: right">{!ASYMBL_Time__Timesheet__c.Overtime_Hours_2DP__c}</td>
                             </tr>
                             <tr>
                                 <th style="background: lightgray;">Doubletime</th>
-                                <td style="text-align: right">{!ASYMBL_Time__Timesheet__c.ASYMBL_Time__Double_Time_Hours__c}</td>
+                                <td style="text-align: right">{!ASYMBL_Time__Timesheet__c.Double_Time_Hours_2DP__c}</td>
                             </tr>
                     	</table>
                     </td>
@@ -115,10 +108,10 @@
                             <tr>
                                 <th style="background: lightgray;">Sick Hours</th>
                                 <td style="text-align: right">
-                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Total_Additional_Hours__c != NULL, true ,false)}">
-                                        {!ASYMBL_Time__Timesheet__c.Total_Additional_Hours__c}
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Sick_Hours_2DP__c != NULL, true ,false)}">
+                                        {!ASYMBL_Time__Timesheet__c.Sick_Hours_2DP__c}
                                     </apex:outputPanel>
-                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Total_Additional_Hours__c == NULL, true ,false)}">
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Sick_Hours_2DP__c == NULL, true ,false)}">
                                     	0.0
                                     </apex:outputPanel>
                                 </td>
@@ -126,10 +119,10 @@
                             <tr>
                                 <th style="background: lightgray;">Holiday Hours</th>
                                 <td style="text-align: right">
-                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Holiday_Hours__c != NULL, true ,false)}">
-                                    	{!ASYMBL_Time__Timesheet__c.Holiday_Hours__c}
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Holiday_Hours_2DP__c != NULL, true ,false)}">
+                                    	{!ASYMBL_Time__Timesheet__c.Holiday_Hours_2DP__c}
                                     </apex:outputPanel>
-                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Holiday_Hours__c == NULL, true ,false)}">
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.Holiday_Hours_2DP__c == NULL, true ,false)}">
                                     	0.0
                                     </apex:outputPanel>
                                 </td>
@@ -137,24 +130,16 @@
                             <tr>
                                 <th style="background: lightgray;">PTO Hours</th>
                                 <td style="text-align: right">
-                                     <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.PTO_Hours__c != NULL, true, false)}">
-                                    	{!ASYMBL_Time__Timesheet__c.PTO_Hours__c}
+                                     <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.PTO_Hours_2DP__c != NULL, true, false)}">
+                                    	{!ASYMBL_Time__Timesheet__c.PTO_Hours_2DP__c}
                                      </apex:outputPanel>
-                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.PTO_Hours__c == NULL, true ,false)}">
+                                    <apex:outputPanel rendered="{!if(ASYMBL_Time__Timesheet__c.PTO_Hours_2DP__c == NULL, true ,false)}">
                                     	0.0
                                     </apex:outputPanel>
                                 </td>
                             </tr>
                     	</table>
                     </td>
-                    <!--<td>
-                    	<table border="1" style="width:100%; border-spacing: 0">
-                            <tr>
-                                <th style="background: lightgray;">Amount</th>
-                                <td style="text-align: right">$ {!ASYMBL_Time__Timesheet__c.Total_Candidate_Pay_Additional__c}</td>
-                            </tr>
-                        </table>
-                    </td>-->
                 </tr>
             </table>
         </div>
